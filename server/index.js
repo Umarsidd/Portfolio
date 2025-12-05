@@ -1,0 +1,35 @@
+import express from 'express';
+import cors from 'cors';
+import dotenv from 'dotenv';
+import contactRoutes from './routes/contact.js';
+import { errorHandler } from './middleware/errorHandler.js';
+
+dotenv.config();
+
+const app = express();
+const PORT = 5001;
+
+// Middleware
+app.use(cors({
+  origin: process.env.CORS_ORIGIN || 'http://localhost:5173',
+  credentials: true
+}));
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
+// Routes
+app.use('/api/contact', contactRoutes);
+
+// Health check
+app.get('/api/health', (req, res) => {
+  res.json({ status: 'OK', message: 'Server is running' });
+});
+
+// Error handling
+app.use(errorHandler);
+
+// Start server
+app.listen(PORT, () => {
+  console.log(`🚀 Server is running on http://localhost:${PORT}`);
+  console.log(`📧 Contact API available at http://localhost:${PORT}/api/contact`);
+});
